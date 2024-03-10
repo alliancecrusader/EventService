@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-type
 --!strict
 
 --[[
@@ -13,7 +14,7 @@ local types = require(script:WaitForChild("Types"))
 
 
 local DEFAULT_KEY : any = "global"
-local DEFAULT_DIR : any = "EventService"
+local DEFAULT_DIR : any = "EventService" 
 
 local DEFAULT_TIMEOUT : number = 5
 local DEFAULT_DT : number = 0.5
@@ -96,6 +97,25 @@ local Event = {
 		local yield_time = end_time - start_time
 		
 		return result, yield_time
+	end,
+	Once = function(self : types.Event, callback : (any) -> (), name : string?) : types.Connection?
+		name = name or tostring(os.clock())
+		if name then 
+			local connection : types.Connection = {
+				Callback = callback,
+				Disconnect = function(self : types.Connection)
+					self.Callback = nil
+				end,
+				Name = name,
+				Parallel = false,
+				FireLimit = 1,
+				FireCount = 0
+			}
+
+			self.Connections[name] = connection
+			return self.Connections[name]
+		end
+		return nil
 	end,
 	Connections = {},
 	FireCount = 0

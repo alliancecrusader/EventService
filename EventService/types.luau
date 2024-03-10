@@ -1,10 +1,8 @@
 --!strict
 
-export type fn = (any) -> ()
-
 export type Connection = {
-	Callback : fn | nil,
-	Disconnect : fn,
+	Callback : ((any) -> ()) | nil,
+	Disconnect : (any) -> (),
 
 	Parallel : boolean,
 	Key : any,
