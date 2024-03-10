@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventService Documentation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #111111;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #9370db, #7c4dff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #aaaaaa;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #9370db;
+            margin-bottom: 1rem;
+        }
+
+        .section h3 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #7c4dff;
+            margin-bottom: 0.5rem;
+        }
+
+        .code {
+            background-color: #222222;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .code pre {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .code::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0.5rem;
+            background: linear-gradient(90deg, #9370db, #7c4dff);
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: transparent;
+            border: none;
+            color: #aaaaaa;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .copy-btn:hover {
+            color: #e0e0e0;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        a {
+            color: #7c4dff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #9370db;
+        }
+
+        .note {
+            background-color: #222222;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .note p {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>EventService</h1>
+            <p>A Luau module to replicate Roblox's native script event and connection system.</p>
+        </div>
+
+        <div class="section">
+            <h2>Types</h2>
+            <h3><code>Connection</code></h3>
+            <div class="code">
+                <pre><code>export type Connection = {
+    Callback : ((any) -> ()) | nil,
+    Disconnect : (any) -> (),
+
+    Parallel : boolean,
+    Name : string,
+
+    FireLimit : number?,
+    FireCount : number
+}</code></pre>
+                <button class="copy-btn">Copy</button>
+            </div>
+            <p>The <code>Connection</code> type represents a connection between a callback function and an event.</p>
+
+            <h3><code>Event</code></h3>
+            <div class="code">
+                <pre><code>export type Event = {
+    Fire : (self : Event, (any)) -> (),
+
+    Connect : (self : Event, callback : (any) -> (), name : string?, fire_limit : number?) -> Connection,
+    ConnectParallel : (self : Event, callback : (any) -> (), name : string?, fire_limit : number?) -> Connection,
+    Once : (self : Event, callback : (any) -> (), name : string?) -> Connection,
+    
+    Connections : {[string] : Connection | nil},
+
+    Destroy : (self : Event) -> (),
+    Wait : (self : Event) -> (),
+
+    FireCount : number,
+    Name : string
+}</code></pre>
+                <button class="copy-btn">Copy</button>
+            </div>
+            <p>The <code>Event</code> type represents an event that can have callbacks connected to it.</p>
+        </div>
+
+        <div class="section">
+            <h2>Module Functions</h2>
+            <h3><code>new(name: string, key: any?, dir: any?, fire_limit: number?): Event</code></h3>
+            <p>Creates a new <code>Event</code> with the given parameters.</p>
+
+            <h3><code>GetEvent(name: string, key: any?, dir: any?): Event?</code></h3>
+            <p>Retrieves an existing <code>Event</code> with the given parameters, or returns <code>nil</code> if not found.</p>
+        </div>
+
+        <div class="section">
+            <h2>Event Methods</h2>
+            <h3><code>Fire(self: Event, ...): ()</code></h3>
+            <p>Fires the event and calls all connected callbacks with the provided arguments.</p>
+
+            <h3><code>Connect(self: Event, callback: (any) -> (), name: string?, fire_limit: number?): Connection?</code></h3>
+            <p>Connects a callback function to the event.</p>
+
+            <h3><code>ConnectParallel(self: Event, callback: (any) -> (), name: string?, fire_limit: number?): Connection?</code></h3>
+            <p>Similar to <code>Connect</code>, but the callback is executed in parallel.</p>
+
+            <h3><code>Once(self: Event, callback: (any) -> (), name: string?): Connection?</code></h3>
+            <p>Connects a callback function to the event, but the connection is automatically disconnected after the first time the event is fired.</p>
+
+            <h3><code>Destroy(self: Event): ()</code></h3>
+            <p>Destroys the event and disconnects all connected callbacks.</p>
+
+            <h3><code>Wait(self: Event, timeout: number?, dt: number?): (any, number)</code></h3>
+            <p>Waits for the event to be fired and returns the arguments passed to the event and the time it took to wait.</p>
+        </div>
+
+        <div class="section">
+            <h2>Connection Methods</h2>
+            <h3><code>Disconnect(self: Connection): ()</code></h3>
+            <p>Disconnects the callback function from the event.</p>
+        </div>
+
+        <div class="section">
+            <h2>Usage Examples</h2>
+            <div class="code">
+                <pre><code>local EventService = require(path.to.EventService)
+
+-- Create a new event
+local myEvent = EventService.new("MyEvent")
+
+-- Connect a callback to the event
+local connection = myEvent:Connect(function(message)
+    print("Received message: " .. message)
+end)
+
+-- Fire the event with arguments
+myEvent:Fire("Hello, world!")
+-- Output: Received message: Hello, world!
+</code></pre>
+                <button class="copy-btn">Copy</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Limitations and Notes</h2>
+            <div class="note">
+                <p>The EventService module is designed to mimic the behavior of Roblox's native event system, but it may not be identical in all scenarios. Events created with this module are not persisted across server restarts or game sessions. Be careful when using events in performance-critical sections of your code, as the overhead of managing connections and firing events may impact performance.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const copyBtns = document.querySelectorAll('.copy-btn');
+
+        copyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const code = btn.previousElementSibling.textContent.trim();
+                navigator.clipboard.writeText(code)
+                    .then(() => {
+                        btn.textContent = 'Copied!';
+                        setTimeout(() => {
+                            btn.textContent = 'Copy';
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy code:', err);
+                    });
+            });
+        });
+    </script>
+</body>
+</html>
