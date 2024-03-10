@@ -80,22 +80,22 @@ local Event = {
 	Wait = function(self : types.Event, timeout : number?, dt : number?) : (any, number)
 		local dt, timeout = dt or DEFAULT_DT, timeout or DEFAULT_TIMEOUT  
 		local result, done, start_time = nil, false, os.clock()
-		
+
 		local connection : types.Connection = self:Connect(function(...)
 			result = ...
 			done = true
 		end, "__wait"..start_time, 1)
-		
+
 		while not done do
 			if os.clock() - start_time >= timeout then
 				break
 			end
 			task.wait(dt)
 		end
-		
+
 		local end_time = os.clock()
 		local yield_time = end_time - start_time
-		
+
 		return result, yield_time
 	end,
 	Once = function(self : types.Event, callback : (any) -> (), name : string?) : types.Connection?
@@ -132,16 +132,16 @@ end
 local module = {
 	new = function(name : string, key : any?, dir : any?, fire_limit : number?) : types.Event
 		key = key or DEFAULT_KEY; dir = dir or DEFAULT_DIR
-		
+
 		local self = {Name = name, FireLimit = fire_limit}
-		
+
 		setmetatable(self, Event)
-		
+
 		if not events[key] then events[key] = {} end
 		if not events[key][dir] then events[key][dir] = {} end
-		
+
 		events[key][dir][name] = self :: any
-		
+
 		return self :: any
 	end,
 	GetEvent = function(name : string, key : any?, dir : any?) : types.Event?

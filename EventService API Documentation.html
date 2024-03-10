@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventService Documentation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            font-family: monospace;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>EventService Documentation</h1>
+        <p>The EventService module is a Luau module designed to replicate Roblox's native script event and connection system. It provides a way to create and manage events, connect callback functions to those events, and fire events to invoke the connected callbacks.</p>
+
+        <h2>Types</h2>
+        <h3><code>Connection</code></h3>
+        <pre><code>export type Connection = {
+    Callback : ((any) -> ()) | nil,
+    Disconnect : (any) -> (),
+
+    Parallel : boolean,
+    Key : any,
+
+    FireLimit : number?,
+    FireCount : number
+}</code></pre>
+        <p>The <code>Connection</code> type represents a connection between a callback function and an event. It has the following properties:</p>
+        <ul>
+            <li><code>Callback</code>: The callback function to be called when the event is fired.</li>
+            <li><code>Disconnect</code>: A function to disconnect the callback from the event.</li>
+            <li><code>Parallel</code>: A boolean indicating whether the callback should be executed in parallel or serially.</li>
+            <li><code>Name</code>: The string key associated with the connection.</li>
+            <li><code>FireLimit</code>: An optional number representing the maximum number of times the callback should be invoked before being automatically disconnected.</li>
+            <li><code>FireCount</code>: The number of times the callback has been invoked.</li>
+        </ul>
+
+        <h3><code>Event</code></h3>
+        <pre><code>export type Event = {
+    Fire : (self : Event, (any)) -> (),
+
+    Connect : (self : Event, callback : (any) -> (), name : string?, fire_limit : number?) -> Connection,
+    ConnectParallel : (self : Event, callback : (any) -> (), name : string?, fire_limit : number?) -> Connection,
+
+    Connections : {[string] : Connection | nil},
+
+    Destroy : (self : Event) -> (),
+    Wait : (self : Event) -> (),
+
+    FireCount : number,
+    Name : string
+}</code></pre>
+        <p>The <code>Event</code> type represents an event that can have callbacks connected to it. It has the following properties and methods:</p>
+        <ul>
+            <li><code>Fire</code>: A function to fire the event and invoke all connected callbacks with the provided arguments.</li>
+            <li><code>Connect</code>: A function to connect a callback to the event. Returns a <code>Connection</code> object representing the connection.</li>
+            <li><code>ConnectParallel</code>: Similar to <code>Connect</code>, but the callback is executed with <code>task.desynchronize</code>.</li>
+            <li><code>Connections</code>: A table containing all the connected callbacks, indexed by their names.</li>
+            <li><code>Destroy</code>: A function to destroy the event and disconnect all connected callbacks.</li>
+            <li><code>Wait</code>: A function to wait for the event to be fired and return the arguments passed to the event and the time it took to wait.</li>
+            <li><code>FireCount</code>: The number of times the event has been fired.</li>
+            <li><code>Name</code>: The name of the event.</li>
+        </ul>
+
+        <h2>Functions</h2>
+        <h3><code>new(name: string, key: any?, dir: any?, fire_limit: number?): Event</code></h3>
+        <p>Creates a new <code>Event</code> with the given name, key, directory, and fire limit. If arguments are missing, the name defaults to <code>tostring(os.clock())</code>, the key and directory default to <code>"global"</code> and <code>"EventService"</code>, respectively.</p>
+
+        <h3><code>GetEvent(name: string, key: any?, dir: any?): Event?</code></h3>
+        <p>Retrieves an existing <code>Event</code> with the given name, key, and directory, or returns <code>nil</code> if not found.</p>
+
+        <h2>Event Methods</h2>
+        <h3><code>Fire(self: Event, ...): ()</code></h3>
+        <p>Fires the event and calls all connected callbacks with the provided arguments. The callbacks are invoked asynchronously using <code>task.spawn</code>. If a callback has a <code>FireLimit</code> set and its <code>FireCount</code> has reached or exceeded that limit, it is automatically disconnected before being invoked. If a callback has <code>Parallel</code> set to <code>true</code>, it is executed in parallel using <code>task.desynchronize</code>.</p>
+
+        <h3><code>Connect(self: Event, callback: (any) -> (), name: string?, fire_limit: number?): Connection?</code></h3>
+        <p>Connects a callback function to the event. If <code>name</code> is not provided, it defaults to <code>tostring(os.clock())</code>. If a connection with the given name already exists, it is overwritten. Returns a <code>Connection</code> object representing the connection, or <code>nil</code> if the connection fails.</p>
+
+        <h3><code>Destroy(self: Event): ()</code></h3>
+        <p>Destroys the event and disconnects all connected callbacks.</p>
+
+        <h3><code>Wait(self: Event, timeout: number?, dt: number?): (any, number)</code></h3>
+        <p>Waits for the event to be fired and returns the arguments passed to the event and the time it took to wait. The <code>timeout</code> argument specifies the maximum time to wait (in seconds) before giving up, defaulting to 5 seconds. The <code>dt</code> argument specifies the time step (in seconds) for checking if the event has been fired, defaulting to 0.5 seconds.</p>
+
+        <h3><code>Once(self: Event, callback: (any) -> (), name: string?): Connection?</code></h3>
+        <p>Connects a callback function to the event, but the connection is automatically disconnected after the first time the event is fired. If <code>name</code> is not provided, it defaults to <code>tostring(os.clock())</code>. Returns a <code>Connection</code> object representing the connection, or <code>nil</code> if the connection fails.</p>
+
+        <h2>Connection Methods</h2>
+        <h3><code>Disconnect(self: Connection): ()</code></h3>
+        <p>Disconnects the callback function from the event by setting its <code>Callback</code> property to <code>nil</code>.</p>
+    </div>
+</body>
+</html>

@@ -5,20 +5,19 @@ export type Connection = {
 	Disconnect : (any) -> (),
 
 	Parallel : boolean,
-	Key : any,
+	Name : string,
 
 	FireLimit : number?,
 	FireCount : number
 }
-
-export type ConnectFunction = (self : Event, callback : (any) -> (), name : string?, fire_limit : number?) -> Connection
 
 export type Event = {
 	Fire : (self : Event, (any)) -> (),
 
 	Connect : (self : Event, callback : (any) -> (), name : string?, fire_limit : number?) -> Connection,
 	ConnectParallel : (self : Event, callback : (any) -> (), name : string?, fire_limit : number?) -> Connection,
-
+	Once : (self : Event, callback : (any) -> (), name : string?) -> Connection,
+	
 	Connections : {[string] : Connection | nil},
 
 	Destroy : (self : Event) -> (),
