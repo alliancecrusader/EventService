@@ -118,25 +118,5 @@ myEvent:Fire("Hello, world!")
             </div>
         </div>
     </div>
-
-    <script>
-        const copyBtns = document.querySelectorAll('.copy-btn');
-
-        copyBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const code = btn.previousElementSibling.textContent.trim();
-                navigator.clipboard.writeText(code)
-                    .then(() => {
-                        btn.textContent = 'Copied!';
-                        setTimeout(() => {
-                            btn.textContent = 'Copy';
-                        }, 2000);
-                    })
-                    .catch(err => {
-                        console.error('Failed to copy code:', err);
-                    });
-            });
-        });
-    </script>
 </body>
 </html>
