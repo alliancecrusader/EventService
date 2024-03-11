@@ -13,4 +13,4 @@ A Luau module made to replicate Roblox's native script event and connection syst
  3. Add the module to `ReplicatedStorage` or `ServerScriptService`
 
 # Documentation
-WIP
+[Documentation](https://alliancecrusader.github.io/EventService/doc/index.html)
